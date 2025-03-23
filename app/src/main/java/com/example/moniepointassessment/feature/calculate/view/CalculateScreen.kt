@@ -3,6 +3,8 @@ package com.example.moniepointassessment.feature.calculate.view
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,10 +16,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Backpack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.DriveFolderUpload
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -25,23 +31,33 @@ import androidx.compose.material.icons.filled.LineWeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +65,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.moniepointassessment.ui.theme.AppBlueShade
 import com.example.moniepointassessment.ui.theme.AppGreyShade
+import com.example.moniepointassessment.ui.theme.AppPurple
+import com.example.moniepointassessment.ui.theme.AppPurpleDark
+import com.example.moniepointassessment.ui.theme.Black
 import com.example.moniepointassessment.ui.theme.MoniepointAssessmentTheme
 import com.example.moniepointassessment.ui.theme.White
 
@@ -57,137 +76,165 @@ import com.example.moniepointassessment.ui.theme.White
 fun CalculateScreen(
     navController: NavController
 ) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Calculate") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color(0xFF673AB7),
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
-                )
-            )
-        }
-    ) { paddingValues ->
-        CalculateScreenContent(Modifier.padding(paddingValues))
-    }
+    CalculateScreenContent(navController = navController)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalculateScreenContent(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
+fun CalculateScreenContent(
+    navController: NavController = rememberNavController()
+) {
+    Box(
+        modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
     ) {
-        Text(
-            text = "Destination",
-            style = TextStyle(
-                color = AppBlueShade,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        Box(
-            modifier = Modifier
-                .background(White)
-                .padding(12.dp),
-        ) {
-            Column {
-                InputField(
-                    imageVector = Icons.Default.DriveFolderUpload,
-                    placeholder = "Sender location"
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                InputField(
-                    imageVector = Icons.Default.CloudDownload,
-                    placeholder = "Receiver location"
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                InputField(
-                    imageVector = Icons.Default.LineWeight,
-                    placeholder = "Approx weight"
+        Scaffold(
+            containerColor = AppGreyShade,
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = { Text("Calculate") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = AppPurpleDark,
+                        titleContentColor = White,
+                        navigationIconContentColor = White
+                    )
                 )
             }
-        }
+        ) { paddingValues ->
+            val scrollState = rememberScrollState()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 16.dp, vertical = paddingValues.calculateTopPadding())
+            ) {
 
-        Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Destination",
+                    style = TextStyle(
+                        color = AppBlueShade,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
 
-        Text(
-            text = "Packaging",
-            style = TextStyle(
-                color = AppBlueShade,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-        )
+                Spacer(modifier = Modifier.height(14.dp))
 
-        Text(
-            text = "What are you sending?",
-            fontSize = 16.sp,
-            color = Color.Gray,
-            modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
-        )
+                Box(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .background(White)
 
-        BoxSelectionField()
+                ) {
+                    Column {
+                        var senderLocation by remember { mutableStateOf(TextFieldValue("")) }
+                        var receiverLocation by remember { mutableStateOf(TextFieldValue("")) }
+                        var weight by remember { mutableStateOf(TextFieldValue("")) }
 
-        Spacer(modifier = Modifier.height(32.dp))
+                        InputField(
+                            imageVector = Icons.Default.DriveFolderUpload,
+                            placeholder = "Sender location",
+                            value = senderLocation,
+                            onValueChange = { senderLocation = it }
+                        )
 
-        Text(
-            text = "Categories",
-            style = TextStyle(
-                color = AppBlueShade,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-        )
+                        Spacer(modifier = Modifier.height(12.dp))
 
-        Text(
-            text = "What are you sending?",
-            fontSize = 16.sp,
-            color = Color.Gray,
-            modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
-        )
+                        InputField(
+                            imageVector = Icons.Default.CloudDownload,
+                            placeholder = "Receiver location",
+                            value = receiverLocation,
+                            onValueChange = { receiverLocation = it }
+                        )
 
-        CategoryChips()
+                        Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(20.dp))
+                        InputField(
+                            imageVector = Icons.Default.LineWeight,
+                            placeholder = "Approx weight",
+                            value = weight,
+                            onValueChange = { weight = it }
+                        )
+                    }
+                }
 
-        Button(
-            onClick = {  },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
-            shape = RoundedCornerShape(28.dp)
-        ) {
-            Text(
-                text = "Calculate",
-                color = Color.White,
-                fontSize = 18.sp
-            )
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text = "Packaging",
+                    style = TextStyle(
+                        color = AppBlueShade,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                Text(
+                    text = "What are you sending?",
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
+                )
+
+                BoxSelectionField()
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text = "Categories",
+                    style = TextStyle(
+                        color = AppBlueShade,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                Text(
+                    text = "What are you sending?",
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
+                )
+
+                CategoryChips()
+
+                Spacer(modifier = Modifier.height(28.dp))
+
+                Button(
+                    onClick = { },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE67E22)),
+                    shape = RoundedCornerShape(28.dp)
+                ) {
+                    Text(
+                        text = "Calculate",
+                        color = Color.White,
+                        fontSize = 18.sp
+                    )
+                }
+            }
         }
     }
 }
 
-
 @Composable
-fun InputField(imageVector: ImageVector, placeholder: String) {
+fun InputField(
+    imageVector: ImageVector,
+    placeholder: String,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,7 +245,7 @@ fun InputField(imageVector: ImageVector, placeholder: String) {
     ) {
         Image(
             imageVector = imageVector,
-            colorFilter = ColorFilter.tint(color = AppBlueShade),
+            colorFilter = ColorFilter.tint(color = Gray),
             contentDescription = null,
             modifier = Modifier.size(24.dp)
         )
@@ -208,56 +255,105 @@ fun InputField(imageVector: ImageVector, placeholder: String) {
             modifier = Modifier
                 .width(1.dp)
                 .height(24.dp)
-                .background(Color.Gray)
+                .background(Gray)
         )
-        Spacer(modifier = Modifier.width(8.dp))
 
-        Text(
-            text = placeholder,
-            color = Color.Gray,
-            fontSize = 16.sp,
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    color = Gray,
+                    fontSize = 16.sp,
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Transparent),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                cursorColor = AppPurple,
+            ),
+            textStyle = TextStyle(color = Black),
+            singleLine = true
         )
     }
 }
 
 @Composable
 fun BoxSelectionField() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.White)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            imageVector = Icons.Default.Backpack,
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(AppBlueShade),
-            modifier = Modifier.size(24.dp)
-        )
+    var expanded by remember { mutableStateOf(false) }
+    var selectedPackage by remember { mutableStateOf("Box") }
+    val packages = listOf("Box", "Envelope", "Pallet", "Crate", "Tube")
 
-        Spacer(modifier = Modifier.width(8.dp))
-        VerticalDivider(
+    Box {
+        Row(
             modifier = Modifier
-                .width(1.dp)
-                .height(24.dp)
-                .background(Color.Gray)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = "Box",
-            fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
-            color = AppBlueShade,
-            modifier = Modifier.weight(1f)
-        )
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.White)
+                .clickable { expanded = true }
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                imageVector = Icons.Default.Backpack,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(AppBlueShade),
+                modifier = Modifier.size(24.dp)
+            )
 
-        Icon(
-            imageVector = Icons.Default.KeyboardArrowDown,
-            contentDescription = "Expand",
-            tint = Color.Gray
-        )
+            Spacer(modifier = Modifier.width(8.dp))
+            VerticalDivider(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(24.dp)
+                    .background(Color.Gray)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = selectedPackage,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = AppBlueShade,
+                modifier = Modifier.weight(1f)
+            )
+
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = "Expand",
+                tint = Color.Gray
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .background(Color.White)
+        ) {
+            packages.forEach { package_ ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = package_,
+                            color = Color.Black
+                        )
+                    }, // Set text color to black
+                    onClick = {
+                        selectedPackage = package_
+                        expanded = false
+                    }
+                )
+            }
+        }
+
     }
 }
 
@@ -266,12 +362,25 @@ fun CategoryChips() {
     val categories =
         listOf("Documents", "Glass", "Liquid", "Food", "Electronic", "Product", "Others")
 
+    var selectedCategories by remember { mutableStateOf(setOf<String>()) }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         categories.take(4).forEach { category ->
-            CategoryChip(text = category, modifier = Modifier.weight(1f))
+            CategoryChip(
+                text = category,
+                isSelected = selectedCategories.contains(category),
+                onSelected = {
+                    selectedCategories = if (selectedCategories.contains(category)) {
+                        selectedCategories - category
+                    } else {
+                        selectedCategories + category
+                    }
+                },
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 
@@ -282,35 +391,68 @@ fun CategoryChips() {
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         categories.drop(4).forEach { category ->
-            CategoryChip(text = category, modifier = Modifier.weight(1f))
+            CategoryChip(
+                text = category,
+                isSelected = selectedCategories.contains(category),
+                onSelected = {
+                    selectedCategories = if (selectedCategories.contains(category)) {
+                        selectedCategories - category
+                    } else {
+                        selectedCategories + category
+                    }
+                },
+                modifier = Modifier.weight(1f)
+            )
         }
 
-        // Empty weight to balance the row (since we have 3 items in the second row but 4 in the first)
         Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryChip(text: String, modifier: Modifier = Modifier) {
+fun CategoryChip(
+    text: String,
+    isSelected: Boolean,
+    onSelected: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Surface(
-        modifier = modifier.height(35.dp),
+        modifier = modifier
+            .height(40.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onSelected
+            ),
         shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, Color.LightGray)
+        border = BorderStroke(1.dp, Color.LightGray),
+        color = if (isSelected) AppBlueShade else Color.White
     ) {
-        Box(
-            contentAlignment = Alignment.Center
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 4.dp)
         ) {
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Selected",
+                    tint = Color.White,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(2.dp))
+            }
+
             Text(
                 text = text,
                 fontSize = 14.sp,
-                color = AppBlueShade,
-                modifier = Modifier.padding(vertical = 4.dp, horizontal = 2.dp)
+                color = if (isSelected) Color.White else AppBlueShade,
+                maxLines = 1
             )
         }
     }
 }
-
 
 @Composable
 @Preview
