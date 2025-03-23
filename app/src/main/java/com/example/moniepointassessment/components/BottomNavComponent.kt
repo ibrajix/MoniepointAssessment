@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.moniepointassessment.ui.theme.AppPurple
+import com.example.moniepointassessment.ui.theme.AppPurpleDark
 
 sealed class BottomBarScreen(
     val route: String,
@@ -104,13 +105,13 @@ fun BottomNavigationBar(navController: NavController) {
                     Icon(
                         imageVector = screen.icon,
                         contentDescription = screen.title,
-                        tint = if (isSelected) AppPurple else Color.Gray,
+                        tint = if (isSelected) AppPurpleDark else Color.Gray,
                         modifier = Modifier.size(24.dp)
                     )
                     Text(
                         text = screen.title,
                         fontSize = 12.sp,
-                        color = if (isSelected) AppPurple else Color.Gray
+                        color = if (isSelected) AppPurpleDark else Color.Gray
                     )
                 }
             }

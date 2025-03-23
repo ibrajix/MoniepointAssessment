@@ -104,7 +104,7 @@ fun ShipmentListComponent(searchQuery: String) {
                 if (shipment != filteredShipments.last()) {
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        thickness = 2.dp, color = Color.LightGray.copy(alpha = 0.5f)
+                        thickness = 1.dp, color = Color.LightGray.copy(alpha = 0.5f)
                     )
                 }
             }

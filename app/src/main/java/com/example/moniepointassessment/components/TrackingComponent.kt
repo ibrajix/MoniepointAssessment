@@ -79,10 +79,10 @@ fun TrackingComponent() {
                         )
                     }
                     Image(
-                        painter = painterResource(id = R.drawable.item_packages),
-                        contentDescription = "Packeges",
+                        painter = painterResource(id = R.drawable.car),
+                        contentDescription = "Pacckage Car",
                         modifier = Modifier
-                            .size(16.dp)
+                            .size(64.dp)
                     )
                 }
                 HorizontalDivider(

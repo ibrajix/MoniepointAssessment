@@ -49,9 +49,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -61,7 +65,9 @@ import com.example.moniepointassessment.ui.theme.AppGrey
 import com.example.moniepointassessment.ui.theme.AppOrange
 import com.example.moniepointassessment.ui.theme.AppPurple
 import com.example.moniepointassessment.ui.theme.AppPurpleDark
+import com.example.moniepointassessment.ui.theme.Black
 import com.example.moniepointassessment.ui.theme.MoniepointAssessmentTheme
+import com.example.moniepointassessment.ui.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,9 +78,15 @@ fun MoveMateAppBar(
     var isSearchMode by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var showResults by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(isSearchMode) {
         onSearchModeChanged(isSearchMode)
+        if (isSearchMode) {
+            focusRequester.requestFocus()
+            keyboardController?.show()
+        }
     }
 
 
@@ -134,15 +146,16 @@ fun MoveMateAppBar(
                             placeholder = {
                                 Text(
                                     "Enter the receipt number...",
-                                    color = Color.Gray
                                 )
                             },
+                            textStyle = TextStyle(color = Black),
                             colors = TextFieldDefaults.colors(
                                 focusedContainerColor = Color.White,
                                 unfocusedContainerColor = Color.White,
                                 disabledContainerColor = Color.White,
                                 focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
+                                unfocusedIndicatorColor = Color.Transparent,
+                                cursorColor = AppPurple
                             ),
                             shape = RoundedCornerShape(24.dp),
                             singleLine = true,
@@ -168,6 +181,7 @@ fun MoveMateAppBar(
                                         shrinkTowards = Alignment.Start
                                     )
                                 )
+                                .focusRequester(focusRequester)
                         )
                     }
                 } else {
@@ -289,7 +303,8 @@ fun MoveMateAppBar(
                                     contentDescription = "Scan",
                                     modifier = Modifier
                                         .align(Alignment.Center)
-                                        .size(36.dp)
+                                        .size(36.dp),
+                                    colorFilter = ColorFilter.tint(color = White)
                                 )
                             }
                         }
