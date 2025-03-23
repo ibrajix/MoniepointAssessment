@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -13,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.moniepointassessment.components.BottomNavigationBar
 import com.example.moniepointassessment.navigation.BottomNavGraph
+import com.example.moniepointassessment.ui.theme.AppGreyShade
 import com.example.moniepointassessment.ui.theme.MoniepointAssessmentTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,10 +26,21 @@ class MainActivity : ComponentActivity() {
             MoniepointAssessmentTheme {
                 val navController = rememberNavController()
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    bottomBar = { BottomNavigationBar(navController) }
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    containerColor = AppGreyShade,
+                    bottomBar = { BottomNavigationBar(navController) },
                 ) { innerPadding ->
-                    BottomNavGraph(navController, modifier = Modifier.padding(innerPadding))
+                    Box(
+                        modifier = Modifier
+                            .padding(
+                                PaddingValues(bottom = innerPadding.calculateBottomPadding())
+                            )
+                    ){
+                        BottomNavGraph(
+                            navController
+                        )
+                    }
                 }
             }
         }

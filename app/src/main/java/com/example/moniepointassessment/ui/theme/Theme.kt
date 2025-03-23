@@ -1,6 +1,5 @@
 package com.example.moniepointassessment.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +22,8 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = White,
     secondary = White,
     background = White,
-    surface = White
+    surface = White,
+    onSurface = Black
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -44,17 +44,18 @@ fun MoniepointAssessmentTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-        val context = LocalContext.current
-        if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-      }
-      darkTheme -> DarkColorScheme
-      else -> LightColorScheme
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+
+        darkTheme -> LightColorScheme //for now
+        else -> LightColorScheme
     }
 
     MaterialTheme(
-      colorScheme = colorScheme,
-      typography = Typography,
-      content = content
+        colorScheme = colorScheme,
+        typography = Typography,
+        content = content
     )
 }

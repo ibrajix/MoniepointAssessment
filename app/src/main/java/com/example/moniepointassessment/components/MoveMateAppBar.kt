@@ -41,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,10 +65,18 @@ import com.example.moniepointassessment.ui.theme.MoniepointAssessmentTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoveMateAppBar(modifier: Modifier = Modifier) {
+fun MoveMateAppBar(
+    modifier: Modifier = Modifier,
+    onSearchModeChanged: (Boolean) -> Unit = {}
+) {
     var isSearchMode by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var showResults by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isSearchMode) {
+        onSearchModeChanged(isSearchMode)
+    }
+
 
     Column(
         modifier = modifier

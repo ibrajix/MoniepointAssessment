@@ -79,7 +79,7 @@ fun BottomNavigationBar(navController: NavController) {
             }
         }
 
-        // Navigation items
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()

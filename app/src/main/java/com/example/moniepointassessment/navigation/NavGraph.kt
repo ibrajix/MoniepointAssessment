@@ -13,7 +13,9 @@ import com.example.moniepointassessment.feature.shipment.view.ShipmentScreen
 
 @Composable
 fun BottomNavGraph(navController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(navController = navController, startDestination = BottomBarScreen.Home.route) {
+    NavHost(
+        navController = navController, startDestination = BottomBarScreen.Home.route,
+    ) {
         composable(BottomBarScreen.Home.route) { HomeScreen() }
         composable(BottomBarScreen.Calculate.route) { CalculateScreen() }
         composable(BottomBarScreen.Shipment.route) { ShipmentScreen() }
