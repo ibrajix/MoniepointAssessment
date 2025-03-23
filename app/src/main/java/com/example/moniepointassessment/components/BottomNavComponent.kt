@@ -3,10 +3,12 @@ package com.example.moniepointassessment.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.moniepointassessment.ui.theme.AppPurple
 
 sealed class BottomBarScreen(
     val route: String,
@@ -51,40 +54,65 @@ fun BottomNavigationBar(navController: NavController) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
-    Row(
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White)
             .windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceAround
     ) {
-        screens.forEach { screen ->
-            val isSelected = currentRoute == screen.route
 
-            Column(
-                modifier = Modifier
-                    .clickable {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            screens.forEachIndexed { index, screen ->
+                val isSelected = currentRoute == screen.route
+
+                val weight = 1f / screens.size
+
+                Box(
+                    modifier = Modifier
+                        .weight(weight)
+                        .height(if (isSelected) 4.dp else 0.dp)
+                        .background(if (isSelected) AppPurple else Color.Transparent)
+                )
+            }
+        }
+
+        // Navigation items
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            screens.forEach { screen ->
+                val isSelected = currentRoute == screen.route
+
+                Column(
+                    modifier = Modifier
+                        .clickable {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
-                    }
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    imageVector = screen.icon,
-                    contentDescription = screen.title,
-                    tint = if (isSelected) Color.Blue else Color.Gray,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = screen.title,
-                    fontSize = 12.sp,
-                    color = if (isSelected) Color.Blue else Color.Gray
-                )
+                        .padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = screen.icon,
+                        contentDescription = screen.title,
+                        tint = if (isSelected) AppPurple else Color.Gray,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text(
+                        text = screen.title,
+                        fontSize = 12.sp,
+                        color = if (isSelected) AppPurple else Color.Gray
+                    )
+                }
             }
         }
     }
