@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.moniepointassessment.navigation.Screens
 import com.example.moniepointassessment.ui.theme.AppBlueShade
 import com.example.moniepointassessment.ui.theme.AppGreyShade
 import com.example.moniepointassessment.ui.theme.AppPurple
@@ -181,7 +182,7 @@ fun CalculateScreenContent(
                 Text(
                     text = "What are you sending?",
                     fontSize = 16.sp,
-                    color = Color.Gray,
+                    color = Gray,
                     modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
                 )
 
@@ -210,7 +211,9 @@ fun CalculateScreenContent(
                 Spacer(modifier = Modifier.height(28.dp))
 
                 Button(
-                    onClick = { },
+                    onClick = {
+                        navController.navigate(Screens.estimateScreen)
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),

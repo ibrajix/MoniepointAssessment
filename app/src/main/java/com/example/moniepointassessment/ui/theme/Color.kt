@@ -15,4 +15,5 @@ val AppGrey = Color(0xFFD2CBDB)
 val AppGreyShade = Color(0xFFFAFAFA)
 val AppGreyShade2 = Color(0xFFF8F8F8)
 val AppBlueShade = Color(0xFF414563)
+val AppGreen = Color(0xFF39e692)
 

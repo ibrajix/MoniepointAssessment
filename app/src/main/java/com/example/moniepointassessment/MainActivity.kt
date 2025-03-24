@@ -51,6 +51,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     MoniepointAssessmentTheme {
-        BottomNavGraph(rememberNavController(), modifier = Modifier.padding())
+        BottomNavGraph(rememberNavController())
     }
 }
