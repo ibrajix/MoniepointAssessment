@@ -1,5 +1,11 @@
 package com.example.moniepointassessment.feature.calculate.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -44,6 +51,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,6 +93,14 @@ fun CalculateScreen(
 fun CalculateScreenContent(
     navController: NavController = rememberNavController()
 ) {
+
+    val transition = remember { MutableTransitionState(false) }
+
+    LaunchedEffect(Unit) {
+        transition.targetState = true
+    }
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -130,41 +146,46 @@ fun CalculateScreenContent(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                Box(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .background(White)
 
+                AnimatedVisibility(
+                    visibleState = transition,
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 })
                 ) {
-                    Column {
-                        var senderLocation by remember { mutableStateOf(TextFieldValue("")) }
-                        var receiverLocation by remember { mutableStateOf(TextFieldValue("")) }
-                        var weight by remember { mutableStateOf(TextFieldValue("")) }
+                    Box(
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .background(White)
+                    ) {
+                        Column {
+                            var senderLocation by remember { mutableStateOf(TextFieldValue("")) }
+                            var receiverLocation by remember { mutableStateOf(TextFieldValue("")) }
+                            var weight by remember { mutableStateOf(TextFieldValue("")) }
 
-                        InputField(
-                            imageVector = Icons.Default.DriveFolderUpload,
-                            placeholder = "Sender location",
-                            value = senderLocation,
-                            onValueChange = { senderLocation = it }
-                        )
+                            InputField(
+                                imageVector = Icons.Default.DriveFolderUpload,
+                                placeholder = "Sender location",
+                                value = senderLocation,
+                                onValueChange = { senderLocation = it }
+                            )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                        InputField(
-                            imageVector = Icons.Default.CloudDownload,
-                            placeholder = "Receiver location",
-                            value = receiverLocation,
-                            onValueChange = { receiverLocation = it }
-                        )
+                            InputField(
+                                imageVector = Icons.Default.CloudDownload,
+                                placeholder = "Receiver location",
+                                value = receiverLocation,
+                                onValueChange = { receiverLocation = it }
+                            )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
 
-                        InputField(
-                            imageVector = Icons.Default.LineWeight,
-                            placeholder = "Approx weight",
-                            value = weight,
-                            onValueChange = { weight = it }
-                        )
+                            InputField(
+                                imageVector = Icons.Default.LineWeight,
+                                placeholder = "Approx weight",
+                                value = weight,
+                                onValueChange = { weight = it }
+                            )
+                        }
                     }
                 }
 
@@ -190,21 +211,19 @@ fun CalculateScreenContent(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                Text(
-                    text = "Categories",
-                    style = TextStyle(
-                        color = AppBlueShade,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
+                AnimatedVisibility(
+                    visibleState = transition,
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 })
+                ) {
+                    Text(
+                        text = "Categories",
+                        style = TextStyle(
+                            color = AppBlueShade,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     )
-                )
-
-                Text(
-                    text = "What are you sending?",
-                    fontSize = 16.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
-                )
+                }
 
                 CategoryChips()
 
@@ -348,7 +367,7 @@ fun BoxSelectionField() {
                             text = package_,
                             color = Color.Black
                         )
-                    }, // Set text color to black
+                    },
                     onClick = {
                         selectedPackage = package_
                         expanded = false
@@ -363,54 +382,55 @@ fun BoxSelectionField() {
 @Composable
 fun CategoryChips() {
     val categories =
-        listOf("Documents", "Glass", "Liquid", "Food", "Electronic", "Product", "Others")
+        listOf("Document", "Glass", "Liquid", "Food", "Electronic", "Product", "Others")
 
     var selectedCategories by remember { mutableStateOf(setOf<String>()) }
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        categories.take(4).forEach { category ->
-            CategoryChip(
-                text = category,
-                isSelected = selectedCategories.contains(category),
-                onSelected = {
-                    selectedCategories = if (selectedCategories.contains(category)) {
-                        selectedCategories - category
-                    } else {
-                        selectedCategories + category
+    Column {
+        Text(
+            text = "What are you sending?",
+            fontSize = 16.sp,
+            color = Gray,
+            modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
+        )
+
+        categories.chunked(4).forEachIndexed { rowIndex, rowCategories ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                rowCategories.forEachIndexed { index, category ->
+                    val delay = (index + rowIndex * 4) * 100 // Staggered delay
+
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = slideInHorizontally(
+                            initialOffsetX = { it }, // Moves from right
+                            animationSpec = tween(durationMillis = 500, delayMillis = delay)
+                        ) + fadeIn(),
+                        modifier = Modifier.wrapContentWidth()
+                    ) {
+                        CategoryChip(
+                            text = category,
+                            isSelected = selectedCategories.contains(category),
+                            onSelected = {
+                                selectedCategories = if (selectedCategories.contains(category)) {
+                                    selectedCategories - category
+                                } else {
+                                    selectedCategories + category
+                                }
+                            },
+                            modifier = Modifier.wrapContentWidth()
+                        )
                     }
-                },
-                modifier = Modifier.weight(1f)
-            )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
-    }
-
-    Spacer(modifier = Modifier.height(8.dp))
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        categories.drop(4).forEach { category ->
-            CategoryChip(
-                text = category,
-                isSelected = selectedCategories.contains(category),
-                onSelected = {
-                    selectedCategories = if (selectedCategories.contains(category)) {
-                        selectedCategories - category
-                    } else {
-                        selectedCategories + category
-                    }
-                },
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -435,7 +455,7 @@ fun CategoryChip(
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 4.dp)
+            modifier = Modifier.padding(horizontal = 10.dp)
         ) {
             if (isSelected) {
                 Icon(
