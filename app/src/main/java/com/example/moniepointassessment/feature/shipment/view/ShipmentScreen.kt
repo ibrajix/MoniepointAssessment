@@ -1,5 +1,6 @@
 package com.example.moniepointassessment.feature.shipment.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
@@ -46,9 +49,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moniepointassessment.R
+import com.example.moniepointassessment.ui.theme.AppDeepBlue
+import com.example.moniepointassessment.ui.theme.AppGreyShade
 import com.example.moniepointassessment.ui.theme.AppOrange
 import com.example.moniepointassessment.ui.theme.AppPurpleDark
 import com.example.moniepointassessment.ui.theme.MoniepointAssessmentTheme
+import com.example.moniepointassessment.ui.theme.White
 
 @Composable
 fun ShipmentScreen() {
@@ -62,7 +68,7 @@ fun ShipmentScreenContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(AppGreyShade)
     ) {
         Spacer(
             modifier = Modifier
@@ -260,7 +266,7 @@ fun ShipmentsSection() {
             date = "Sep 20,2023"
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         ShipmentItem(
             status = "pending",
@@ -272,8 +278,8 @@ fun ShipmentsSection() {
         Spacer(modifier = Modifier.height(16.dp))
 
         ShipmentItem(
-            status = "pending",
-            statusColor = Color(0xFFE5A84C),
+            status = "loading",
+            statusColor = AppDeepBlue,
             price = "$650 USD",
             date = "Sep 20,2023"
         )
@@ -291,7 +297,7 @@ fun ShipmentItem(
         modifier = Modifier
             .fillMaxWidth(),
         colors = CardColors(
-            containerColor = Color(0xFFF9FCFA),
+            containerColor = White,
             contentColor = Color.Black,
             disabledContainerColor = Color(0xFFF9FCFA),
             disabledContentColor = Color.Black
@@ -305,23 +311,31 @@ fun ShipmentItem(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(AppGreyShade, shape = CircleShape),
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.scan),
-                    contentDescription = status,
-                    tint = statusColor,
-                    modifier = Modifier.size(16.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp, vertical = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.scan),
+                        contentDescription = status,
+                        tint = statusColor,
+                        modifier = Modifier.size(16.dp)
+                    )
 
-                Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
 
-                Text(
-                    text = status,
-                    color = statusColor,
-                    fontSize = 14.sp
-                )
+                    Text(
+                        text = status,
+                        color = statusColor,
+                        fontSize = 14.sp
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -352,7 +366,7 @@ fun ShipmentItem(
                         color = Color.Gray
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -367,23 +381,17 @@ fun ShipmentItem(
                         Text(
                             text = " • $date",
                             fontSize = 14.sp,
-                            color = Color.Gray
                         )
                     }
                 }
 
-                Box(
+                Image(
                     modifier = Modifier
-                        .size(64.dp)
-                        .background(Color(0xFFEEEEEE))
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "📦",
-                        fontSize = 24.sp
-                    )
-                }
+                        .size(50.dp),
+                    painter = painterResource(R.drawable.box),
+                    contentDescription = "Box",
+                    contentScale = ContentScale.Fit,
+                )
             }
         }
     }
