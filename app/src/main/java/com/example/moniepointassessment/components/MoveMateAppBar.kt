@@ -157,7 +157,7 @@ fun MoveMateAppBar(
                                 unfocusedIndicatorColor = Color.Transparent,
                                 cursorColor = AppPurple
                             ),
-                            shape = RoundedCornerShape(24.dp),
+                            shape = RoundedCornerShape(40.dp),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                             keyboardActions = KeyboardActions(onSearch = { showResults = true }),
@@ -168,6 +168,25 @@ fun MoveMateAppBar(
                                     tint = AppPurple
                                 )
                             },
+                            trailingIcon = {
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(AppOrange)
+                                        .padding(8.dp)
+                                ) {
+                                    Image(
+                                        painter = painterResource(R.drawable.scan),
+                                        contentDescription = "Scan",
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .size(36.dp),
+                                        colorFilter = ColorFilter.tint(color = White)
+                                    )
+                                }
+                            },
+
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(24.dp))
@@ -275,7 +294,7 @@ fun MoveMateAppBar(
                                     isSearchMode = true
                                     showResults = true
                                 }
-                                .padding(horizontal = 10.dp, vertical = 8.dp)
+                                .padding(horizontal = 18.dp, vertical = 8.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Search,

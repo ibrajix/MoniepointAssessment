@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.moniepointassessment.R
 import com.example.moniepointassessment.ui.theme.AppPurpleDark
 import com.example.moniepointassessment.ui.theme.White
@@ -139,7 +140,7 @@ fun ShipmentItem(shipment: ShipmentItem) {
             )
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(8.dp))
 
         Column(
             modifier = Modifier.weight(1f)
@@ -150,11 +151,9 @@ fun ShipmentItem(shipment: ShipmentItem) {
                 color = Color.DarkGray
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
-
             Text(
                 text = "#${shipment.id} • ${shipment.origin} → ${shipment.destination}",
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                 color = Color.Gray
             )
             Spacer(modifier = Modifier.height(6.dp))

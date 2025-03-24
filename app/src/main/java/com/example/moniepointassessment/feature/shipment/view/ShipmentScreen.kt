@@ -1,5 +1,13 @@
 package com.example.moniepointassessment.feature.shipment.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,17 +28,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,29 +75,70 @@ fun ShipmentScreen() {
 @Composable
 fun ShipmentScreenContent() {
     var selectedTab by remember { mutableStateOf("All") }
+    var isVisible by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppGreyShade)
+    LaunchedEffect(Unit) {
+        isVisible = true
+    }
+
+
+
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(animationSpec = tween(1200)) +
+                slideInVertically(
+                    initialOffsetY = { fullHeight -> fullHeight },
+                    animationSpec = tween(1200, easing = FastOutSlowInEasing)
+                ),
+        exit = fadeOut(animationSpec = tween(600)) +
+                slideOutVertically(
+                    targetOffsetY = { fullHeight -> fullHeight },
+                    animationSpec = tween(600, easing = FastOutSlowInEasing)
+                )
     ) {
-        Spacer(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsCustomTopHeight(WindowInsets.statusBars)
-                .background(AppPurpleDark)
-        )
+                .fillMaxSize()
+                .background(AppGreyShade)
+        ) {
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsCustomTopHeight()
+                    .background(AppPurpleDark)
+            )
 
-        ShipmentTopAppBar()
+            ShipmentTopAppBar()
 
-        TabFilters(selectedTab) { tab -> selectedTab = tab }
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn(animationSpec = tween(800, delayMillis = 300)) +
+                        slideInVertically(
+                            initialOffsetY = { fullHeight -> fullHeight / 2 },
+                            animationSpec = tween(800, delayMillis = 300)
+                        )
+            ) {
+                Column {
+                    TabFilters(selectedTab) { tab -> selectedTab = tab }
 
-        ShipmentsSection()
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(animationSpec = tween(800, delayMillis = 600)) +
+                                slideInVertically(
+                                    initialOffsetY = { fullHeight -> fullHeight / 3 },
+                                    animationSpec = tween(800, delayMillis = 600)
+                                )
+                    ) {
+                        ShipmentsSection()
+                    }
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun Modifier.windowInsetsCustomTopHeight(insets: WindowInsets): Modifier {
+fun Modifier.windowInsetsCustomTopHeight(): Modifier {
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     return this.height(statusBarHeight)
 }
@@ -116,8 +168,7 @@ fun ShipmentTopAppBar() {
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 16.dp),
+                    .weight(1f),
                 textAlign = TextAlign.Center
             )
         }
@@ -133,12 +184,13 @@ fun TabFilters(selectedTab: String, onTabSelected: (String) -> Unit) {
     var selectedTabWidth by remember { mutableStateOf(60.dp) }
     val density = LocalDensity.current
 
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(AppPurpleDark)
     ) {
-        var parentOffsetX by remember { mutableStateOf(0f) }
+        var parentOffsetX by remember { mutableFloatStateOf(0f) }
 
         Box(
             modifier = Modifier
@@ -245,46 +297,42 @@ fun ShipmentTabItem(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShipmentsSection() {
-    Column(
+    val shipments = listOf(
+        ShipmentData("in-progress", Color(0xFF4CAF50), "$1400 USD", "Sep 20, 2023"),
+        ShipmentData("pending", Color(0xFFE5A84C), "$650 USD", "Sep 20, 2023"),
+        ShipmentData("loading", AppDeepBlue, "$650 USD", "Sep 20, 2023"),
+        ShipmentData("loading", AppDeepBlue, "$650 USD", "Sep 20, 2023"),
+        ShipmentData("loading", AppDeepBlue, "$650 USD", "Sep 20, 2023")
+    )
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = "Shipments",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        ShipmentItem(
-            status = "in-progress",
-            statusColor = Color(0xFF4CAF50),
-            price = "$1400 USD",
-            date = "Sep 20,2023"
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        ShipmentItem(
-            status = "pending",
-            statusColor = Color(0xFFE5A84C),
-            price = "$650 USD",
-            date = "Sep 20,2023"
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ShipmentItem(
-            status = "loading",
-            statusColor = AppDeepBlue,
-            price = "$650 USD",
-            date = "Sep 20,2023"
-        )
+        item {
+            Text(
+                text = "Shipments",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+        }
+        items(shipments) { shipment ->
+            ShipmentItem(
+                status = shipment.status,
+                statusColor = shipment.statusColor,
+                price = shipment.price,
+                date = shipment.date
+            )
+        }
     }
 }
+
 
 @Composable
 fun ShipmentItem(
@@ -292,19 +340,11 @@ fun ShipmentItem(
     statusColor: Color,
     price: String,
     date: String,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        colors = CardColors(
-            containerColor = White,
-            contentColor = Color.Black,
-            disabledContainerColor = Color(0xFFF9FCFA),
-            disabledContentColor = Color.Black
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp
-        )
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = White)
     ) {
         Column(
             modifier = Modifier
@@ -314,11 +354,10 @@ fun ShipmentItem(
             Box(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(AppGreyShade, shape = CircleShape),
+                    .background(AppGreyShade, shape = CircleShape)
             ) {
                 Row(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp, vertical = 2.dp),
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -334,7 +373,7 @@ fun ShipmentItem(
                         text = status,
                         color = statusColor,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -381,22 +420,28 @@ fun ShipmentItem(
 
                         Text(
                             text = " • $date",
-                            fontSize = 14.sp,
+                            fontSize = 14.sp
                         )
                     }
                 }
 
                 Image(
-                    modifier = Modifier
-                        .size(50.dp),
+                    modifier = Modifier.size(50.dp),
                     painter = painterResource(R.drawable.box),
                     contentDescription = "Box",
-                    contentScale = ContentScale.Fit,
+                    contentScale = ContentScale.Fit
                 )
             }
         }
     }
 }
+
+data class ShipmentData(
+    val status: String,
+    val statusColor: Color,
+    val price: String,
+    val date: String
+)
 
 
 @Composable

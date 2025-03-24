@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moniepointassessment.R
 import com.example.moniepointassessment.ui.theme.AppBlueShade
-import com.example.moniepointassessment.ui.theme.Black
 import com.example.moniepointassessment.ui.theme.MoniepointAssessmentTheme
 
 @Composable
@@ -97,7 +96,6 @@ fun VehicleOptionCard(
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Title and subtitle in top-start corner with proper padding
             Column(
                 modifier = Modifier
                     .padding(start = 20.dp, top = 20.dp)
@@ -106,8 +104,7 @@ fun VehicleOptionCard(
                 Text(
                     text = title,
                     fontSize = 18.sp,
-                    color = Black,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Normal
                 )
 
                 Text(
@@ -118,7 +115,6 @@ fun VehicleOptionCard(
                 )
             }
 
-            // Image positioned closer to the text and larger in size
             Image(
                 painter = painterResource(id = imageRes),
                 contentDescription = title,
@@ -126,7 +122,7 @@ fun VehicleOptionCard(
                 modifier = Modifier
                     .size(200.dp)
                     .align(Alignment.BottomEnd)
-                    .offset(x = 30.dp, y = 20.dp) // Adjusted to reduce space between text and image
+                    .offset(x = 30.dp, y = 20.dp)
             )
         }
     }

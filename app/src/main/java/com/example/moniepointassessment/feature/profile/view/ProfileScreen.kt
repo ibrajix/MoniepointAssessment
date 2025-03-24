@@ -1,5 +1,6 @@
 package com.example.moniepointassessment.feature.profile.view
 
+import android.content.Intent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutBounce
 import androidx.compose.animation.core.tween
@@ -14,7 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,12 +26,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.moniepointassessment.R
+import com.example.moniepointassessment.ui.theme.AppGreyShade
+import com.example.moniepointassessment.ui.theme.AppPurpleDark
+import com.example.moniepointassessment.ui.theme.Black
 import com.example.moniepointassessment.ui.theme.MoniepointAssessmentTheme
+import com.example.moniepointassessment.ui.theme.White
 
 @Composable
 fun ProfileScreen() {
@@ -40,6 +49,8 @@ fun ProfileScreen() {
 fun ProfileScreenContent() {
     val scale = remember { Animatable(0.5f) }
     val alpha = remember { Animatable(0f) }
+
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         scale.animateTo(
@@ -55,7 +66,7 @@ fun ProfileScreenContent() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(AppGreyShade)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -76,9 +87,8 @@ fun ProfileScreenContent() {
 
             Text(
                 text = "Inuwa Ibrahim",
-                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = Black,
                 modifier = Modifier.alpha(alpha.value)
             )
 
@@ -86,20 +96,44 @@ fun ProfileScreenContent() {
 
             Text(
                 text = "Mobile Engineer",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                color = Black,
                 modifier = Modifier.alpha(alpha.value)
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "I just added these, no profile UI :))",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                modifier = Modifier.alpha(alpha.value)
+                text = "If you think I did well in this test, contact me—let's build! :)",
+                color = Gray,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .alpha(alpha.value)
+                    .padding(horizontal = 28.dp)
+                    .align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.height(16.dp))
+
+            val emailIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "message/rfc822"
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("ibrajix@gmail.com"))
+                putExtra(Intent.EXTRA_SUBJECT, "Let's Build!")
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    ""
+                )
+            }
+
+            Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppPurpleDark,
+                    contentColor = White
+                ),
+                onClick = {
+                    context.startActivity(Intent.createChooser(emailIntent, "Send Email"))
+                }
+            ) {
+                Text(text = "Contact Me")
+            }
 
         }
     }
