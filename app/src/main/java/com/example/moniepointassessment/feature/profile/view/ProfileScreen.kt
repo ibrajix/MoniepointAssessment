@@ -91,6 +91,14 @@ fun ProfileScreenContent() {
                 modifier = Modifier.alpha(alpha.value)
             )
 
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "I just added these, no profile UI :))",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                modifier = Modifier.alpha(alpha.value)
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
         }

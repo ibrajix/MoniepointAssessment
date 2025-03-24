@@ -333,7 +333,8 @@ fun ShipmentItem(
                     Text(
                         text = status,
                         color = statusColor,
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
